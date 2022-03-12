@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "dns" {
-  source           = "../../modules/aws/route53_with_cert"
+  source           = "git::https://github.com/nosetech/terraform-modules.git//modules/aws/route53_with_cert"
 
   domain_name      = var.domain_name
   hostedzone_tags  = {
