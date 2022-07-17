@@ -14,7 +14,7 @@ output "private_RT_id" {
   value = aws_route_table.private_RT.id
 }
 output "default_sg_id" {
-  value = aws_default_security_group.main.id
+  value = aws_default_security_group.default_sg.id
 }
 output "frontend_sg_id" {
   value = aws_security_group.frontend_sg.id

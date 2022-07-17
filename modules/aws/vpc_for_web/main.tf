@@ -95,8 +95,29 @@ resource "aws_route_table_association" "private" {
 /***************************************************************************************************
  * NACL setting
 ***************************************************************************************************/
-resource "aws_default_network_acl" "public_nacl" {
+resource "aws_default_network_acl" "default_nacl" {
   default_network_acl_id = aws_vpc.main.default_network_acl_id
+
+  tags = {
+    Name = "${var.name_tag_prefix}-DefaultSubnetNACL"
+  }
+}
+
+resource "aws_network_acl_rule" "default_nacl_rule" {
+  network_acl_id = aws_default_network_acl.default_nacl.id
+
+  for_each       = var.default_nacl_rule
+  rule_number    = each.value[0]
+  egress         = each.value[1]
+  protocol       = each.value[2]
+  rule_action    = each.value[3]
+  cidr_block     = each.value[4]
+  from_port      = each.value[5]
+  to_port        = each.value[6]
+}
+
+resource "aws_network_acl" "public_nacl" {
+  vpc_id = aws_vpc.main.id
 
   subnet_ids = aws_subnet.public_subnet.*.id
 
@@ -106,7 +127,7 @@ resource "aws_default_network_acl" "public_nacl" {
 }
 
 resource "aws_network_acl_rule" "public_nacl_rule" {
-  network_acl_id = aws_default_network_acl.public_nacl.id
+  network_acl_id = aws_network_acl.public_nacl.id
 
   for_each       = var.public_nacl_rule
   rule_number    = each.value[0]
@@ -144,16 +165,16 @@ resource "aws_network_acl_rule" "private_nacl_rule" {
 /***************************************************************************************************
  * SecurityGroup setting
 ***************************************************************************************************/
-resource "aws_default_security_group" "main" {
+resource "aws_default_security_group" "default_sg" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${var.name_tag_prefix}-MainSG"
+    Name = "${var.name_tag_prefix}-DefaultSG"
   }
 }
-resource "aws_security_group_rule" "main_sg_rule" {
-  security_group_id        = aws_default_security_group.main.id
-  for_each                 = var.frontend_sg
+resource "aws_security_group_rule" "default_sg_rule" {
+  security_group_id        = aws_default_security_group.default_sg.id
+  for_each                 = var.default_sg
   type                     = each.value[0]
   from_port                = each.value[1]
   to_port                  = each.value[2]
