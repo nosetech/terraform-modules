@@ -23,8 +23,8 @@
 
 | Name      | Version   |
 | :-------- | :-------- |
-| terraform | >= 1.1.4  |
-| aws       | >= 3.73.0 |
+| terraform | >= 1.5.0  |
+| aws       | >= 5.13.0 |
 
 # Resources
 
